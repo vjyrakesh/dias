@@ -1,0 +1,18 @@
+{% extends "dias_base.html" %}
+{% block title %} Dias - Welcome {% endblock %}
+{% block content %}
+	{% if request.session.site_user_fname %}
+		<h1>Welcome {{request.session.site_user_fname|title}} </h1>
+		<a href="/logout/">Logout</a>
+	{% endif %}
+<form action="/doctors/" method="post">
+	{% csrf_token %}
+	<label for="spl_select">Select a speciality: </label>
+	<select id="spl_select" name="selSpl">
+		{% for spl in specialities %}
+		<option>{{ spl|title }}</option>
+		{% endfor %}
+	</select>
+	<p><input type="submit" value="Search"></input></p>
+</form>
+{% endblock %}

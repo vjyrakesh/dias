@@ -1,0 +1,14 @@
+{% extends "dias_base.html" %}
+{% block title %} Dias - Login {% endblock %}
+{% block content %}
+<form method="post" action="/login/">
+	{% csrf_token %}
+	<p>{{ message }}</p>
+	<p><label for="id_un">Username</label>
+	<input id="id_un" type="text" name="un"></p>
+	<p><label for="id_pd">Password</label>
+	<input id="id_pd" type="password" name="pd"></p>
+	<p><input type="submit" value="Login">
+	<input type="reset" value="Clear"></p>
+</form>
+{% endblock %}

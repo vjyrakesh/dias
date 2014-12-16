@@ -1,0 +1,77 @@
+{% extends "dias_base.html" %}
+{% block title %} Dias - Appointment for Dr. {{ doc.user.first_name }} {{ doc.user.last_name }} 
+
+
+{% endblock %}
+{% block includes %}
+<script type="text/javascript" src="../static/jquery/external/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../static/jquery/jquery-ui.js"></script>
+	<script type="text/javascript" src="../static/jquery/jquery-ui.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../static/jquery/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="../static/jquery/jquery-ui.min.css">
+	<script type="text/javascript">
+		$(function() {
+		    $( "#datepicker" ).datepicker({
+		    	autoSize:true,
+		    	duration:'fast',
+		    	dateFormat:'DD, dd/mm/yy',
+		    	//onSelect:dateChanged
+		    });
+		});
+
+		function dateChanged(selDate,obj)
+		{
+			//alert('Day selected is: ' + selDate.substring(0,selDate.indexOf(',')));
+			//window.location.assign('/');
+			//alert(window.location.href);
+		}
+	</script>
+{% endblock %}
+{% block content %}
+	
+	
+
+<div>
+	<h1>Book appointment for Dr. {{ doc.user.first_name }} {{ doc.user.last_name }} </h1>
+	<div style="float:left;border:1px solid;margin:10px;padding:10px;">
+		<h1>Dr. {{ doc.user.first_name }} {{ doc.user.last_name }}</h1>
+		<p>Qualification: {{ doc.qualification }}</p>
+		<p>Specialization: {{ doc.specialization }}</p>
+		<p>Experience: {{ doc.years_of_experience }} years, {{ doc.months_of_experience }} months</p>
+		<p>Phone number: {{ doc.phone_number }}</p>
+	</div>
+	<div style="float:left;border:1px solid;margin:10px;padding:10px;">
+		<h2>Appointment details</h2>
+		<form method="get" action="/appointment/{{doc.user.first_name}}.{{doc.user.last_name}}">
+			<p>Date: <input type="text" id="datepicker" name="date" value="{{selDate}}"></p>
+			<p><input type="submit" value="Get available slots"/></p>
+		</form>
+	</div>
+	{% if selDate %}
+		<div style="float:left;border:1px solid;margin:10px;padding:10px;">
+			<h2>Available slots for {{ selDate }}</h2>
+			<form method="post" action="/appointment/book/confirm/">
+				{%csrf_token%}
+				<table >
+					
+					<tr>
+						<td>Select time: </td>
+						<td>
+							<select name="slotHour">
+								{% for oneSlotTime in avlSlotTimes %}
+									<option value="{{oneSlotTime|time:"H:i"}}">{{oneSlotTime}}</option>
+								{% endfor %}
+							</select>
+						</td>
+						
+					</tr>	
+				</table>
+				<input type="hidden" name="docFirstName" value="{{doc.user.first_name}}">
+				<input type="hidden" name="docLastName" value="{{doc.user.last_name}}">
+				<input type="hidden" name="selDate" value="{{selDate}}">
+				<p><input type="submit" value="Book appointment"></p>
+			</form>	
+		</div>
+	{% endif %}
+</div>
+{% endblock %}

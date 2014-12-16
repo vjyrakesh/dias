@@ -1,0 +1,74 @@
+{% extends "dias_base.html" %}
+{% block title %} Dias - Appointments {% endblock %}
+{% block content %}
+
+<div>
+<h1>Welcome Dr. {{user.first_name}} {{user.last_name}}. You have {{ upcoming_aps|length }} upcoming appointments. </h1>
+<div >
+	<div style="float:left;border:1px solid;margin:10px;padding:10px;">
+		<h3>Past appointments</h3>
+		<table border=1>
+			<tr>
+				<td>Appointment date</td><td>Appointment time</td><td>Appointment with</td><td colspan=2>Actions</td>
+			</tr>
+			{% for ap in past_aps %}
+				<tr>
+					<td>{{ap.apDate}}</td>
+					<td>{{ap.apTime}}</td>
+					<td> {{ap.patient.user.first_name}} {{ap.patient.user.last_name}}</td>
+					<td>
+						<form method="post">{%csrf_token%}
+							<input type="submit" value="Re-schedule">
+							<input type="hidden" value="{{ap.id}}" name="apid">
+						</form>
+					</td>
+					<td>
+						<form method="post" action="/appointment/cancel/confirm/">{%csrf_token%}
+							<input type="submit" value="Cancel">
+							<input type="hidden" value="{{ap.doctor.user.first_name}}" name="docFirstName">
+							<input type="hidden" value="{{ap.doctor.user.last_name}}" name="docLastName">
+							<input type="hidden" value="{{ap.apDate|date:"d/m/Y"}}" name="selDate">
+							<input type="hidden" value="{{ap.apTime.hour}}" name="slotHour">
+							<input type="hidden" value="{{ap.apTime.minute}}" name="slotMin">
+							<input type="hidden" value="{{ap.id}}" name="apid">
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+	<div style="float:left;border:1px solid;margin:10px;padding:10px;">
+		<h3>Upcoming appointments</h3>
+		<table border=1>
+			<tr>
+				<td>Appointment date</td><td>Appointment time</td><td>Appointment with</td><td colspan=2>Actions</td>
+			</tr>
+			{% for ap in upcoming_aps %}
+				<tr>
+					<td>{{ap.apDate}}</td>
+					<td>{{ap.apTime}}</td>
+					<td> {{ap.patient.user.first_name}} {{ap.patient.user.last_name}}</td>
+					<td>
+						<form method="post">{%csrf_token%}
+							<input type="submit" value="Re-schedule">
+							<input type="hidden" value="{{ap.id}}" name="apid">
+						</form>
+					</td>
+					<td>
+						<form method="post" action="/appointment/cancel/confirm/">{%csrf_token%}
+							<input type="submit" value="Cancel">
+							<input type="hidden" value="{{ap.doctor.user.first_name}}" name="docFirstName">
+							<input type="hidden" value="{{ap.doctor.user.last_name}}" name="docLastName">
+							<input type="hidden" value="{{ap.apDate|date:"d/m/Y"}}" name="selDate">
+							<input type="hidden" value="{{ap.apTime.hour}}" name="slotHour">
+							<input type="hidden" value="{{ap.apTime.minute}}" name="slotMin">
+							<input type="hidden" value="{{ap.id}}" name="apid">
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+</div>
+</div>
+{% endblock %}

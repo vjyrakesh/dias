@@ -1,0 +1,18 @@
+{% extends "dias_base.html" %}
+{% block title %} Dias - {{spl_name|title}}s {% endblock %}
+{% block content %}
+
+<h1>{{spl_name|title}}s in Bangalore</h1><br/>
+<div>
+	{% for doc in doctors %}
+	<p>
+		<div>
+			Dr. {{ doc.user.first_name|add:" "|add:doc.user.last_name }}<br/>
+			{{ doc.address }}<br/>
+			<a href="#">Book</a> <a href="{{doc.get_absolute_url}}">Profile</a>
+		</div>
+		<hr/>
+	</p>
+	{% endfor %}
+</div>
+{% endblock %}

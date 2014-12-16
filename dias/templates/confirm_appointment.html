@@ -1,0 +1,35 @@
+{% extends "dias_base.html" %}
+{% block title %} Dias - Confirm appointment {% endblock %}
+{% block includes %}
+<script type="text/javascript">
+		function cancelAppointment()
+		{
+			window.location = window.location.origin + "/appointment/{{ ap.doctor.user.first_name }}.{{ ap.doctor.user.last_name }}";
+		}
+	</script>
+{% endblock %}
+{% block content %}
+
+	<div>
+		<center>
+			<form method="post" action="/appointment/{{action}}/">
+				{%csrf_token%}
+				<h1>Confirm your appointment</h1>
+				<h3>Please verify your appointment details given below and confirm to {{action}} your appointment.</h3>
+				{% ifequal action "cancel" %}
+					<h4 style="color:red">Once the appointment is canceled, you have to book a new appointment.</h4>
+					<p>Appointment with Dr. {{ ap.doctor.user.first_name }} {{ ap.doctor.user.last_name }} </p>
+					<p>Appointment on {{ ap.apDate }} at {{ ap.apTime }}</p>
+				{% endifequal %}
+				{% ifequal action "book" %}
+					<p>Appointment with Dr. {{ ap.doctor.user.first_name }} {{ ap.doctor.user.last_name }} </p>
+					<p>Appointment on {{ ap.apDate }} at {{ ap.apTime }}</p>
+				{% endifequal %}
+					<input type="hidden" value="{{ ap.id }}" name="apid">
+					
+				
+				<p><input type="submit" value="Confirm"> <input type="button" value="Cancel" onClick="cancelAppointment()"></p>
+			</form>
+		</center>
+	</div>
+{% endblock %}

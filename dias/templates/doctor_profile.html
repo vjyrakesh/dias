@@ -1,0 +1,24 @@
+{% extends "dias_base.html" %}
+{% block title %} Dias - {{ doc.user.first_name }} {{ doc.user.last_name }} {% endblock %}
+{% block content %}
+
+
+	<div style="float:left;border:1px solid;margin:10px;padding:10px;">
+		<h1>Dr. {{ doc.user.first_name }} {{ doc.user.last_name }}</h1>
+		<p>Qualification: {{ doc.qualification }}</p>
+		<p>Specialization: {{ doc.specialization }}</p>
+		<p>Experience: {{ doc.years_of_experience }} years, {{ doc.months_of_experience }} months</p>
+		<p>Phone number: {{ doc.phone_number }}</p>
+		<p><a href="/appointment/{{doc.user.first_name}}.{{doc.user.last_name}}">Schedule an appointment</a></p>
+	</div>
+	<div style="float:left;border:1px solid;margin:10px;padding:10px;">
+		<h2>Visiting hours</h2>
+		<table border=1 >
+			{% for slot_day,slot_list in slots_dict.items %}
+			<tr>
+				<td style="padding:5px">{{ slot_day|title }}</td>{% for slot_item in slot_list %} <td style="padding:5px">{{slot_item.0}} - {{ slot_item.1 }}</td>  {% endfor %}
+			</tr>
+			{% endfor %}
+		</table>	
+	</div>
+{% endblock %}

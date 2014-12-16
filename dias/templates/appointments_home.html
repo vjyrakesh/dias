@@ -1,0 +1,39 @@
+{% extends "dias_base.html" %}
+{% block title %} Dias - Appointments {% endblock %}
+{% block content %}
+
+<div>
+<h1>Welcome {{user.first_name}} {{user.last_name}}. You have {{ al.count }} appointments. </h1>
+<div>
+	<table border=1>
+		<tr>
+			<td>Appointment date</td><td>Appointment time</td><td>Appointment with</td><td colspan=2>Actions</td>
+		</tr>
+		{% for ap in al %}
+			<tr>
+				<td>{{ap.apDate}}</td>
+				<td>{{ap.apTime}}</td>
+				<td>Dr. {{ap.doctor.user.first_name}} {{ap.doctor.user.last_name}}</td>
+				<td>
+					<form method="post">{%csrf_token%}
+						<input type="submit" value="Re-schedule">
+						<input type="hidden" value="{{ap.id}}" name="apid">
+					</form>
+				</td>
+				<td>
+					<form method="post" action="/appointment/cancel/confirm/">{%csrf_token%}
+						<input type="submit" value="Cancel">
+						<input type="hidden" value="{{ap.doctor.user.first_name}}" name="docFirstName">
+						<input type="hidden" value="{{ap.doctor.user.last_name}}" name="docLastName">
+						<input type="hidden" value="{{ap.apDate|date:"d/m/Y"}}" name="selDate">
+						<input type="hidden" value="{{ap.apTime.hour}}" name="slotHour">
+						<input type="hidden" value="{{ap.apTime.minute}}" name="slotMin">
+						<input type="hidden" value="{{ap.id}}" name="apid">
+					</form>
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+</div>
+</div>
+{% endblock %}
