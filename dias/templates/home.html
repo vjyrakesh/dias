@@ -2,8 +2,8 @@
 {% block title %} Dias - Welcome {% endblock %}
 {% block content %}
 	{% if request.session.site_user_fname %}
-		<h1>Welcome {{request.session.site_user_fname|title}} </h1>
-		<a href="/logout/">Logout</a>
+		<h1>Welcome  {% if request.session.usr_grp == '1' %}Dr.{%endif%} {{request.session.site_user_fname|title}} </h1>
+		
 	{% endif %}
 <form action="/doctors/" method="post">
 	{% csrf_token %}

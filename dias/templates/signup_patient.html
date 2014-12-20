@@ -1,0 +1,16 @@
+{% extends "dias_base.html" %}
+{% block title %} Dias - Sign up {% endblock %}
+{% block content %}
+<fieldset class="boxShadow">
+	
+<form method="post" action="/signup/" id="login-form">
+	{% csrf_token %}
+	<h3>User sign-up form</h3>
+	<p>{{ message }}</p>
+	{{ form.as_p }}
+	<p><input type="submit" value="Signup" class="formbutton">
+	<input type="reset" value="Clear" class="formbutton-reset"></p>
+</form>
+
+</fieldset>
+{% endblock %}

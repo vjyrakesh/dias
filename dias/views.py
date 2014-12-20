@@ -2,14 +2,21 @@ import datetime
 from django.http import HttpResponse,HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate,login,logout
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
 
 from dias.models import Doctor,Patient,Appointment,get_ap_date
+from dias.forms import PatientRegistrationForm,DivErrorList
 from dias.utils import *
 
 # Need to externalize this
 slotQuantum = 15
+
+def setSessionVariables(request):
+	grp = Group.objects.filter(user=User.objects.get(pk=7))[0]
+	request.session['site_user_fname'] = request.user.first_name
+	request.session['usr_grp'] = str(grp.id)
 
 #@login_required(login_url="/login/")
 def home(request):
@@ -19,7 +26,7 @@ def home(request):
 		print 'next not available'
 	if request.user and len(User.objects.filter(username=request.user.username))>0:
 		site_user = request.user
-		request.session['site_user_fname'] = request.user.first_name
+		setSessionVariables(request)
 	return render(request,'home.html',{'specialities':get_specialities_list()})
 	
 def get_specialities_list():
@@ -89,7 +96,7 @@ def confirm_appointment(request,action):
 			slDate = datetime.datetime.strptime(slotDate,'%d/%m/%Y').date()
 			slotTime = datetime.datetime.strptime(request.POST['slotHour'],"%H:%M").time()
 			doc = Doctor.objects.get(user=User.objects.get(first_name=docFirstName,last_name=docLastName))
-			p = Patient.objects.get(pk=1)
+			p = Patient.objects.get(user=request.user)
 			ap = Appointment(apDate=slDate,apTime=slotTime,doctor=doc,patient=p)
 			ap.save()
 		elif action == 'cancel':
@@ -110,13 +117,13 @@ def cancel_appointment(request):
 
 @login_required(login_url="/login/")
 def appointments_home(request):
-	p = Patient.objects.get(pk=1)
+	p = Patient.objects.get(user=request.user)
 	al = p.appointment_set.all()
 	return render(request,"appointments_home.html",{'user':p.user, 'al':al})
 
 @login_required(login_url="/login/")
 def appointments_home_doc(request):
-	d = Doctor.objects.get(pk=1)
+	d = Doctor.objects.get(user=request.user)
 	al = d.appointment_set.all()
 	past_aps = []
 	upcoming_aps = []
@@ -134,10 +141,17 @@ def site_login(request):
 		if request.POST['un'] and request.POST['pd']:
 			username = request.POST['un']
 			password = request.POST['pd']
+			print 'username:' + username + ',password:' + password
 			user = authenticate(username=username,password=password)
+			print 'user:' + user.first_name
 			if user and user.is_active:
 				login(request,user)
-				return HttpResponseRedirect("/home/")
+				grp = Group.objects.get(user=user)
+				setSessionVariables(request)
+				if grp.name == 'Doctor':
+					return HttpResponseRedirect("/appointments/doctor/")
+				elif grp.name == 'Patient':
+					return HttpResponseRedirect("/home/")
 			else:
 				return render(request,"login_form.html",{'message':'Invalid username or password'})
 		else:
@@ -145,9 +159,52 @@ def site_login(request):
 	else:
 		return render(request,"login_form.html",{'message':''})
 
+@login_required(login_url="/login/")
 def site_logout(request):
 	if request.user.is_authenticated():
 		logout(request)
 		return render(request,"logged_out.html")
 	else:
 		return render(request,"login_form.html")
+
+def site_signup(request):
+	if request.method == 'POST':
+		form = PatientRegistrationForm(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			uname = cd['username']
+			pword = cd['password']
+			firstname = cd['firstname']
+			lastname = cd['lastname']
+			email = cd['emailid']
+			mobNum = cd['mobNum']
+			locality = cd['locality']
+			user = User(username=uname,password=make_password(pword),first_name=firstname,last_name=lastname,email=email)
+			user.backend='django.contrib.auth.backends.ModelBackend'
+			user.save()
+			usr = User.objects.get(username=uname)
+
+			if usr:
+				pat = Patient(phone_number=mobNum,locality=locality,user=usr)
+				pat.save()
+				usr.groups.add(Group.objects.get(name='Patient'))
+				#usr = authenticate(username=uname,password=pword)
+				login(request,user)
+				request.session['new_un'] = uname
+				#return HttpResponseRedirect("/signupsuccess/")
+				return HttpResponseRedirect("/home/")
+	else:
+		form = PatientRegistrationForm(error_class=DivErrorList)
+	return render(request,"signup_patient.html",{'form':form})
+
+def signup_success(request):
+	if request.session['new_un']:
+		print request.session['new_un']
+		uname = request.session['new_un']
+		user = User.objects.get(username=uname)
+		if user:
+			print user.password
+			usr = authenticate(username=uname,password=user.password)
+			login(request,usr)
+	return render(request,"signup_success.html")
+

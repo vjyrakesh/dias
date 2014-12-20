@@ -21,4 +21,6 @@ urlpatterns = patterns('',
     url(r'^appointments/doctor/$','dias.views.appointments_home_doc'),
     url(r'^appointment/cancel/confirm/$','dias.views.confirm_appointment',{'action':'cancel'}),
     url(r'^appointment/cancel/$','dias.views.cancel_appointment'),
+    url(r'^signup/$','dias.views.site_signup'),
+    url(r'^signupsuccess/$','dias.views.signup_success'),
 )

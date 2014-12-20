@@ -27,8 +27,6 @@ class Doctor(models.Model):
 	def get_absolute_url(self):
 		return "/doctor/%s.%s" %(self.user.first_name,self.user.last_name)
 
-
-
 class Patient(models.Model):
 	phone_number = models.CharField(max_length=15)
 	locality = models.CharField(max_length=50)
@@ -46,8 +44,6 @@ class Appointment(models.Model):
 	doctor = models.ForeignKey(Doctor)
 	patient = models.ForeignKey(Patient)
 	status = models.CharField(max_length=20)
-
-
 
 class Slot(models.Model):
 	week_day = models.CharField(max_length=10)

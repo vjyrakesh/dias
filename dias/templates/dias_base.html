@@ -9,10 +9,30 @@
 	<body>
 		<header>
 			<div class="width">
-	    		<h1><a href="/"><span>Dias</span></a></h1>
+	    		<h1><a href="/home/"><span>Dias</span></a></h1>
 	        	<h2>Doctor appointment, made easy&#0153;</h2>
 			</div>
+			
 		</header>
+		
+		<nav>
+			<div class="width">
+	    		<ul>
+	    			{% if request.session.site_user_fname %}
+		        		<li class="start selected"><a href="/home/">Home</a></li>
+		        	    <li class="end"><a href="/logout/">Logout</a></li>
+		          	 	{% if request.session.usr_grp == '2' %}
+		          	 		<li class="end"><a href="/appointments/">My Appointments</a></li>
+		          	 	{% endif %}
+		          	 {% else %}
+		          	 	<li class="end"><a href="/login/">Login</a></li>
+		          	 	<li class="end"><a href="/signup/">Signup</a></li>
+		          	 {% endif %}
+	        	</ul>
+	        	
+			</div>
+    	</nav>
+    	
 		<div id="body" class="width">
 			{% block content %}{% endblock %}
 
